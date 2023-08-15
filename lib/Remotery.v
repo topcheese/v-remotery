@@ -948,8 +948,8 @@ fn rmtclosefile(fp &C.FILE)  {
 fn rmtwritefile(fp &C.FILE, data voidptr, size RmtU32) RmtBool {
 	(
 		if __builtin_expect(!(fp != (voidptr(0))), 0){
-			 __assert_rtn(, c'Remotery.c', 273, c'fp != NULL') }
-			else {void(0)}
+			 __assert_rtn( c'Remotery.c', 273, c'fp != NULL') }
+			else {return error('error message')}
 			)
 	return if C.fwrite(data, size, 1, fp) == size{ (RmtBool(1)) } else {(RmtBool(0))}
 }
