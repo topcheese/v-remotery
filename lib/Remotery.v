@@ -995,7 +995,9 @@ fn timedatenow() &Tm {
 type RmtTLS = Pthread_key_t
 [c:'tlsAlloc']
 fn tlsalloc(handle &RmtTLS) RmtError {
-	(if __builtin_expect(!(handle != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 461, c'handle != NULL') } else {void(0)})
+	(if __builtin_expect(!(handle != (voidptr(0))), 0){
+		 __assert_rtn(c'Remotery.c', 461, c'handle != NULL') 
+		 } else {return error('error message')})
 	if pthread_key_create(handle, (voidptr(0))) != 0 {
 		*handle = 4294967295
 		return RmtError.rmt_error_tls_alloc_fail
@@ -1005,19 +1007,21 @@ fn tlsalloc(handle &RmtTLS) RmtError {
 
 [c:'tlsFree']
 fn tlsfree(handle RmtTLS)  {
-	(if __builtin_expect(!(handle != 4294967295), 0){ __assert_rtn(, c'Remotery.c', 483, c'handle != TLS_INVALID_HANDLE') } else {void(0)})
+	(if __builtin_expect(!(handle != 4294967295), 0){
+		 __assert_rtn(c'Remotery.c', 483, c'handle != TLS_INVALID_HANDLE') 
+		 } else {return error('error message')})
 	pthread_key_delete(Pthread_key_t(handle))
 }
 
 [c:'tlsSet']
 fn tlsset(handle RmtTLS, value voidptr)  {
-	(if __builtin_expect(!(handle != 4294967295), 0){ __assert_rtn(, c'Remotery.c', 493, c'handle != TLS_INVALID_HANDLE') } else {void(0)})
+	(if __builtin_expect(!(handle != 4294967295), 0){ __assert_rtn(c'Remotery.c', 493, c'handle != TLS_INVALID_HANDLE') } else {return error('error message')})
 	pthread_setspecific(Pthread_key_t(handle), value)
 }
 
 [c:'tlsGet']
 fn tlsget(handle RmtTLS) voidptr {
-	(if __builtin_expect(!(handle != 4294967295), 0){ __assert_rtn(, c'Remotery.c', 503, c'handle != TLS_INVALID_HANDLE') } else {void(0)})
+	(if __builtin_expect(!(handle != 4294967295), 0){ __assert_rtn(c'Remotery.c', 503, c'handle != TLS_INVALID_HANDLE') } else {return error('error message')})
 	return pthread_getspecific(Pthread_key_t(handle))
 }
 
@@ -1073,25 +1077,25 @@ fn rmt_getlasterrormessage() RmtPStr {
 type RmtMutex = Pthread_mutex_t
 [c:'mtxInit']
 fn mtxinit(mutex &RmtMutex)  {
-	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 593, c'mutex != NULL') } else {void(0)})
+	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(c'Remotery.c', 593, c'mutex != NULL') } else {return error('error message')})
 	pthread_mutex_init(mutex, (voidptr(0)))
 }
 
 [c:'mtxLock']
 fn mtxlock(mutex &RmtMutex)  {
-	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 603, c'mutex != NULL') } else {void(0)})
+	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(c'Remotery.c', 603, c'mutex != NULL') } else {return error('error message')})
 	pthread_mutex_lock(mutex)
 }
 
 [c:'mtxUnlock']
 fn mtxunlock(mutex &RmtMutex)  {
-	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 613, c'mutex != NULL') } else {void(0)})
+	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(c'Remotery.c', 613, c'mutex != NULL') } else {return error('error message')})
 	pthread_mutex_unlock(mutex)
 }
 
 [c:'mtxDelete']
 fn mtxdelete(mutex &RmtMutex)  {
-	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 623, c'mutex != NULL') } else {void(0)})
+	(if __builtin_expect(!(mutex != (voidptr(0))), 0){ __assert_rtn(c'Remotery.c', 623, c'mutex != NULL') } else {return error('error message')})
 	pthread_mutex_destroy(mutex)
 }
 
@@ -1099,7 +1103,7 @@ type RmtAtomicS32 = Atomic(rmtS32)
 type RmtAtomicU32 = Atomic(rmtU32)
 type RmtAtomicU64 = Atomic(rmtU64)
 type RmtAtomicBool = Atomic(rmtBool)
-type RmtAtomicVoidPtr = Atomic(void *)
+type RmtAtomicVoidPtr = Atomic(voidptr)
 [c:'AtomicCompareAndSwapU32']
 fn atomiccompareandswapu32(val &RmtAtomicU32, old_val RmtU32, new_val RmtU32) RmtBool {
 	return 
@@ -1142,12 +1146,14 @@ fn atomicloadu32(value &RmtAtomicU32) RmtU32 {
 
 [c:'CompilerWriteFence']
 fn compilerwritefence()  {
-	__asm__
+	// error: `__asm__` evaluated but not used
+	// __asm__
 }
 
 [c:'CompilerReadFence']
 fn compilerreadfence()  {
-	__asm__
+	// error: `__asm__` evaluated but not used
+	// __asm__
 }
 
 [c:'LoadAcquire']
@@ -1245,8 +1251,8 @@ fn log2i(x RmtU32) RmtU32 {
 fn galoislfsrmask(table_size_log2 RmtU32) RmtU32 {
 	xormasks := [((1 << 0) | (1 << 1)), ((1 << 1) | (1 << 2)), ((1 << 2) | (1 << 3)), ((1 << 2) | (1 << 4)), ((1 << 4) | (1 << 5)), ((1 << 5) | (1 << 6)), ((1 << 3) | (1 << 4) | (1 << 5) | (1 << 7))]!
 	
-	(if __builtin_expect(!(table_size_log2 >= 2), 0){ __assert_rtn(, c'Remotery.c', 940, c'table_size_log2 >= 2') } else {void(0)})
-	(if __builtin_expect(!(table_size_log2 <= 8), 0){ __assert_rtn(, c'Remotery.c', 941, c'table_size_log2 <= 8') } else {void(0)})
+	(if __builtin_expect(!(table_size_log2 >= 2), 0){ __assert_rtn(c'Remotery.c', 940, c'table_size_log2 >= 2') } else {return error('error message')})
+	(if __builtin_expect(!(table_size_log2 <= 8), 0){ __assert_rtn(c'Remotery.c', 941, c'table_size_log2 <= 8') } else {return error('error message')})
 	return xormasks [table_size_log2 - 2] 
 }
 
@@ -1267,7 +1273,10 @@ struct VirtualMirrorBuffer {
 [c:'VirtualMirrorBuffer_Constructor']
 fn virtualmirrorbuffer_constructor(buffer &VirtualMirrorBuffer, size RmtU32, nb_attempts int) RmtError {
 	k_64 := 64 * 1024
-	void((if 1{ void(0) } else {(void(nb_attempts))}))
+	if nb_attempts > 0 {
+  return error('error message')
+}
+	
 	size = (size + k_64 - 1) / k_64 * k_64
 	buffer.size = size
 	buffer.ptr = (voidptr(0))
@@ -1314,7 +1323,7 @@ fn virtualmirrorbuffer_constructor(buffer &VirtualMirrorBuffer, size RmtU32, nb_
 
 [c:'VirtualMirrorBuffer_Destructor']
 fn virtualmirrorbuffer_destructor(buffer &VirtualMirrorBuffer)  {
-	(if __builtin_expect(!(buffer != 0), 0){ __assert_rtn(, c'Remotery.c', 1438, c'buffer != 0') } else {void(0)})
+	(if __builtin_expect(!(buffer != 0), 0){ __assert_rtn(, c'Remotery.c', 1438, c'buffer != 0') } else {return error('error message')})
 	if buffer.ptr != (voidptr(0)) {
 	vm_deallocate(mach_task_self_, Vm_address_t(buffer.ptr), buffer.size * 2)
 	}
@@ -1480,20 +1489,20 @@ struct Thread_t {
 [c:'StartFunc']
 fn startfunc(pargs voidptr) voidptr {
 	thread := &RmtThread(pargs)
-	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2236, c'thread != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2236, c'thread != NULL') } else {return error('error message')})
 	thread.error = thread.callback(thread)
 	return (voidptr(0))
 }
 
 [c:'rmtThread_Valid']
 fn rmtthread_valid(thread &RmtThread) int {
-	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2244, c'thread != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2244, c'thread != NULL') } else {return error('error message')})
 	return !pthread_equal(thread.handle, pthread_self())
 }
 
 [c:'rmtThread_Constructor']
 fn rmtthread_constructor(thread &RmtThread, callback ThreadProc, param voidptr) RmtError {
-	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2255, c'thread != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2255, c'thread != NULL') } else {return error('error message')})
 	thread.callback = callback
 	thread.param = param
 	thread.error = RmtError.rmt_error_none
@@ -1508,19 +1517,19 @@ fn rmtthread_constructor(thread &RmtThread, callback ThreadProc, param voidptr) 
 
 [c:'rmtThread_RequestExit']
 fn rmtthread_requestexit(thread &RmtThread)  {
-	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2295, c'thread != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2295, c'thread != NULL') } else {return error('error message')})
 	thread.request_exit = (RmtBool(1))
 }
 
 [c:'rmtThread_Join']
 fn rmtthread_join(thread &RmtThread)  {
-	(if __builtin_expect(!(rmtthread_valid(thread)), 0){ __assert_rtn(, c'Remotery.c', 2301, c'rmtThread_Valid(thread)') } else {void(0)})
+	(if __builtin_expect(!(rmtthread_valid(thread)), 0){ __assert_rtn(, c'Remotery.c', 2301, c'rmtThread_Valid(thread)') } else {return error('error message')})
 	pthread_join(thread.handle, (voidptr(0)))
 }
 
 [c:'rmtThread_Destructor']
 fn rmtthread_destructor(thread &RmtThread)  {
-	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2312, c'thread != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2312, c'thread != NULL') } else {return error('error message')})
 	if rmtthread_valid(thread) {
 		rmtthread_requestexit(thread)
 		rmtthread_join(thread)
@@ -1533,7 +1542,7 @@ struct ObjectLink {
 type RmtAtomicObjectLinkPtr = Atomic(ObjectLink *)
 [c:'ObjectLink_Constructor']
 fn objectlink_constructor(link &ObjectLink)  {
-	(if __builtin_expect(!(link != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2349, c'link != NULL') } else {void(0)})
+	(if __builtin_expect(!(link != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2349, c'link != NULL') } else {return error('error message')})
 	link.next = (voidptr(0))
 }
 
@@ -1562,11 +1571,11 @@ fn objectallocator_constructor(allocator &ObjectAllocator, object_size RmtU32, c
 
 [c:'ObjectAllocator_Destructor']
 fn objectallocator_destructor(allocator &ObjectAllocator)  {
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2391, c'allocator != NULL') } else {void(0)})
-	(if __builtin_expect(!(allocator.nb_inuse == 0), 0){ __assert_rtn(, c'Remotery.c', 2392, c'allocator->nb_inuse == 0') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2391, c'allocator != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(allocator.nb_inuse == 0), 0){ __assert_rtn(, c'Remotery.c', 2392, c'allocator->nb_inuse == 0') } else {return error('error message')})
 	for allocator.first_free != (voidptr(0)) {
 		next := (&ObjectLink(allocator.first_free)).next
-		(if __builtin_expect(!(allocator.destructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2398, c'allocator->destructor != NULL') } else {void(0)})
+		(if __builtin_expect(!(allocator.destructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2398, c'allocator->destructor != NULL') } else {return error('error message')})
 		allocator.destructor(voidptr(allocator.first_free))
 		rmtfree(voidptr(allocator.first_free))
 		allocator.first_free = next
@@ -1575,9 +1584,9 @@ fn objectallocator_destructor(allocator &ObjectAllocator)  {
 
 [c:'ObjectAllocator_Push']
 fn objectallocator_push(allocator &ObjectAllocator, start &ObjectLink, end &ObjectLink)  {
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2407, c'allocator != NULL') } else {void(0)})
-	(if __builtin_expect(!(start != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2408, c'start != NULL') } else {void(0)})
-	(if __builtin_expect(!(end != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2409, c'end != NULL') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2407, c'allocator != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(start != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2408, c'start != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(end != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2409, c'end != NULL') } else {return error('error message')})
 	for  ;  ;  {
 		old_link := &ObjectLink(allocator.first_free)
 		end.next = old_link
@@ -1591,7 +1600,7 @@ fn objectallocator_push(allocator &ObjectAllocator, start &ObjectLink, end &Obje
 [c:'ObjectAllocator_Pop']
 fn objectallocator_pop(allocator &ObjectAllocator) &ObjectLink {
 	link := &ObjectLink(0)
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2426, c'allocator != NULL') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2426, c'allocator != NULL') } else {return error('error message')})
 	for  ;  ;  {
 		old_link := &ObjectLink(allocator.first_free)
 		if old_link == (voidptr(0)) {
@@ -1610,8 +1619,8 @@ fn objectallocator_pop(allocator &ObjectAllocator) &ObjectLink {
 
 [c:'ObjectAllocator_Alloc']
 fn objectallocator_alloc(allocator &ObjectAllocator, object &voidptr) RmtError {
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2454, c'allocator != NULL') } else {void(0)})
-	(if __builtin_expect(!(object != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2455, c'object != NULL') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2454, c'allocator != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(object != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2455, c'object != NULL') } else {return error('error message')})
 	*object = objectallocator_pop(allocator)
 	if *object == (voidptr(0)) {
 		error := RmtError{}
@@ -1619,10 +1628,10 @@ fn objectallocator_alloc(allocator &ObjectAllocator, object &voidptr) RmtError {
 		if *object == (voidptr(0)) {
 		return RmtError.rmt_error_malloc_fail
 		}
-		(if __builtin_expect(!(allocator.constructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2469, c'allocator->constructor != NULL') } else {void(0)})
+		(if __builtin_expect(!(allocator.constructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2469, c'allocator->constructor != NULL') } else {return error('error message')})
 		error = allocator.constructor(*object)
 		if error != RmtError.rmt_error_none {
-			(if __builtin_expect(!(allocator.destructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2474, c'allocator->destructor != NULL') } else {void(0)})
+			(if __builtin_expect(!(allocator.destructor != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2474, c'allocator->destructor != NULL') } else {return error('error message')})
 			allocator.destructor(*object)
 			rmtfree(*object)
 			return error
@@ -1638,7 +1647,7 @@ fn objectallocator_alloc(allocator &ObjectAllocator, object &voidptr) RmtError {
 
 [c:'ObjectAllocator_Free']
 fn objectallocator_free(allocator &ObjectAllocator, object voidptr)  {
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2495, c'allocator != NULL') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2495, c'allocator != NULL') } else {return error('error message')})
 	objectallocator_push(allocator, &ObjectLink(object), &ObjectLink(object))
 	atomicsubs32(&allocator.nb_inuse, 1)
 	atomicadds32(&allocator.nb_free, 1)
@@ -1646,7 +1655,7 @@ fn objectallocator_free(allocator &ObjectAllocator, object voidptr)  {
 
 [c:'ObjectAllocator_FreeRange']
 fn objectallocator_freerange(allocator &ObjectAllocator, start voidptr, end voidptr, count RmtU32)  {
-	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2503, c'allocator != NULL') } else {void(0)})
+	(if __builtin_expect(!(allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2503, c'allocator != NULL') } else {return error('error message')})
 	objectallocator_push(allocator, &ObjectLink(start), &ObjectLink(end))
 	atomicsubs32(&allocator.nb_inuse, count)
 	atomicadds32(&allocator.nb_free, count)
@@ -1660,7 +1669,7 @@ struct Buffer {
 }
 [c:'Buffer_Constructor']
 fn buffer_constructor(buffer &Buffer, alloc_granularity RmtU32) RmtError {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2529, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2529, c'buffer != NULL') } else {return error('error message')})
 	buffer.alloc_granularity = alloc_granularity
 	buffer.bytes_allocated = 0
 	buffer.bytes_used = 0
@@ -1670,7 +1679,7 @@ fn buffer_constructor(buffer &Buffer, alloc_granularity RmtU32) RmtError {
 
 [c:'Buffer_Destructor']
 fn buffer_destructor(buffer &Buffer)  {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2539, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2539, c'buffer != NULL') } else {return error('error message')})
 	if buffer.data != (voidptr(0)) {
 		rmtfree(buffer.data)
 		buffer.data = (voidptr(0))
@@ -1692,7 +1701,7 @@ fn buffer_grow(buffer &Buffer, length RmtU32) RmtError {
 
 [c:'Buffer_Pad']
 fn buffer_pad(buffer &Buffer, length RmtU32) RmtError {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2565, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2565, c'buffer != NULL') } else {return error('error message')})
 	if buffer.bytes_used + length > buffer.bytes_allocated {
 		{
 			error := buffer_grow(buffer, length)
@@ -1713,7 +1722,7 @@ fn buffer_alignedpad(buffer &Buffer, start_pos RmtU32) RmtError {
 
 [c:'Buffer_Write']
 fn buffer_write(buffer &Buffer, data voidptr, length RmtU32) RmtError {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2586, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2586, c'buffer != NULL') } else {return error('error message')})
 	if buffer.bytes_used + length > buffer.bytes_allocated {
 		{
 			error := buffer_grow(buffer, length)
@@ -1730,7 +1739,7 @@ fn buffer_write(buffer &Buffer, data voidptr, length RmtU32) RmtError {
 
 [c:'Buffer_WriteStringZ']
 fn buffer_writestringz(buffer &Buffer, string_ RmtPStr) RmtError {
-	(if __builtin_expect(!(string_ != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2603, c'string != NULL') } else {void(0)})
+	(if __builtin_expect(!(string_ != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2603, c'string != NULL') } else {return error('error message')})
 	return buffer_write(buffer, voidptr(string_), RmtU32(strnlen_s_safe_c(string_, 2048)) + 1)
 }
 
@@ -1749,7 +1758,7 @@ fn buffer_writebool(buffer &Buffer, value RmtBool) RmtError {
 
 [c:'Buffer_WriteU32']
 fn buffer_writeu32(buffer &Buffer, value RmtU32) RmtError {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2623, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2623, c'buffer != NULL') } else {return error('error message')})
 	if buffer.bytes_used + sizeof(value) > buffer.bytes_allocated {
 		{
 			error := buffer_grow(buffer, sizeof(value))
@@ -1773,7 +1782,7 @@ fn islittleendian() RmtBool {
 
 [c:'Buffer_WriteF64']
 fn buffer_writef64(buffer &Buffer, value RmtF64) RmtError {
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2657, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2657, c'buffer != NULL') } else {return error('error message')})
 	if buffer.bytes_used + sizeof(value) > buffer.bytes_allocated {
 		{
 			error := buffer_grow(buffer, sizeof(value))
@@ -1841,7 +1850,7 @@ struct RmtHashTable {
 }
 [c:'rmtHashTable_Constructor']
 fn rmthashtable_constructor(table &RmtHashTable, max_nb_slots RmtU32) RmtError {
-	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2751, c'table != NULL') } else {void(0)})
+	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2751, c'table != NULL') } else {return error('error message')})
 	table.maxNbSlots = max_nb_slots
 	table.nbSlots = 0
 	table.slots = &HashSlot(rmtmalloc((table.maxNbSlots) * sizeof(HashSlot)))
@@ -1855,7 +1864,7 @@ fn rmthashtable_constructor(table &RmtHashTable, max_nb_slots RmtU32) RmtError {
 
 [c:'rmtHashTable_Destructor']
 fn rmthashtable_destructor(table &RmtHashTable)  {
-	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2764, c'table != NULL') } else {void(0)})
+	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2764, c'table != NULL') } else {return error('error message')})
 	if table.slots != (voidptr(0)) {
 		rmtfree(table.slots)
 		table.slots = (voidptr(0))
@@ -1871,8 +1880,8 @@ fn rmthashtable_insert(table &RmtHashTable, key RmtU32, value RmtU64) RmtError {
 	error := RmtError.rmt_error_none
 	index_mask := table.maxNbSlots - 1
 	index := key & index_mask
-	(if __builtin_expect(!(key != 0), 0){ __assert_rtn(, c'Remotery.c', 2784, c'key != 0') } else {void(0)})
-	(if __builtin_expect(!(value != 18446744073709551615), 0){ __assert_rtn(, c'Remotery.c', 2785, c'value != RMT_NOT_FOUND') } else {void(0)})
+	(if __builtin_expect(!(key != 0), 0){ __assert_rtn(, c'Remotery.c', 2784, c'key != 0') } else {return error('error message')})
+	(if __builtin_expect(!(value != 18446744073709551615), 0){ __assert_rtn(, c'Remotery.c', 2785, c'value != RMT_NOT_FOUND') } else {return error('error message')})
 	for table.slots [index] .key {
 		if table.slots [index] .key == key {
 			table.nbSlots --
@@ -1881,7 +1890,7 @@ fn rmthashtable_insert(table &RmtHashTable, key RmtU32, value RmtU64) RmtError {
 		}
 		index = (index + 1) & index_mask
 	}
-	(if __builtin_expect(!(index < table.maxNbSlots), 0){ __assert_rtn(, c'Remotery.c', 2802, c'index < table->maxNbSlots') } else {void(0)})
+	(if __builtin_expect(!(index < table.maxNbSlots), 0){ __assert_rtn(, c'Remotery.c', 2802, c'index < table->maxNbSlots') } else {return error('error message')})
 	slot = table.slots + index
 	slot.key = key
 	slot.value = value
@@ -1944,7 +1953,7 @@ struct StringTable {
 }
 [c:'StringTable_Constructor']
 fn stringtable_constructor(table &StringTable) RmtError {
-	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2903, c'table != NULL') } else {void(0)})
+	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2903, c'table != NULL') } else {return error('error message')})
 	table.text = (voidptr(0))
 	table.text_map = (voidptr(0))
 	{
@@ -1986,7 +1995,7 @@ fn stringtable_constructor(table &StringTable) RmtError {
 
 [c:'StringTable_Destructor']
 fn stringtable_destructor(table &StringTable)  {
-	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2916, c'table != NULL') } else {void(0)})
+	(if __builtin_expect(!(table != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 2916, c'table != NULL') } else {return error('error message')})
 	if table.text_map != (voidptr(0)) {
 		rmthashtable_destructor(table.text_map)
 		rmtfree(table.text_map)
@@ -2045,14 +2054,14 @@ fn shutdownnetwork()  {
 
 [c:'TCPSocket_Constructor']
 fn tcpsocket_constructor(tcp_socket &TCPSocket) RmtError {
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3013, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3013, c'tcp_socket != NULL') } else {return error('error message')})
 	tcp_socket.socket = -1
 	return initialisenetwork()
 }
 
 [c:'TCPSocket_Destructor']
 fn tcpsocket_destructor(tcp_socket &TCPSocket)  {
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3020, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3020, c'tcp_socket != NULL') } else {return error('error message')})
 	tcpsocket_close(tcp_socket)
 	shutdownnetwork()
 }
@@ -2062,7 +2071,7 @@ fn tcpsocket_runserver(tcp_socket &TCPSocket, port RmtU16, reuse_open_port RmtBo
 	s := -1
 	sin := Sockaddr_in{}
 	C.memset(&sin, 0, sizeof(sin))
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3035, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3035, c'tcp_socket != NULL') } else {return error('error message')})
 	s = socket(2, 1, 6)
 	if s == -1 {
 		return rmtmakeerror(RmtError.rmt_error_resource_create_fail, c"Can't create a socket for connection to the remote viewer")
@@ -2089,7 +2098,7 @@ fn tcpsocket_runserver(tcp_socket &TCPSocket, port RmtU16, reuse_open_port RmtBo
 
 [c:'TCPSocket_Close']
 fn tcpsocket_close(tcp_socket &TCPSocket)  {
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3099, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3099, c'tcp_socket != NULL') } else {return error('error message')})
 	if tcp_socket.socket != -1 {
 		result := shutdown(tcp_socket.socket, 1)
 		if result != -1 {
@@ -2116,7 +2125,7 @@ fn tcpsocket_pollstatus(tcp_socket &TCPSocket) SocketStatus {
 	status.can_read = (RmtBool(0))
 	status.can_write = (RmtBool(0))
 	status.error_state = RmtError.rmt_error_none
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3133, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3133, c'tcp_socket != NULL') } else {return error('error message')})
 	if tcp_socket.socket == -1 {
 		status.error_state = RmtError.rmt_error_socket_invalid_poll
 		return status
@@ -2143,7 +2152,7 @@ fn tcpsocket_pollstatus(tcp_socket &TCPSocket) SocketStatus {
 fn tcpsocket_acceptconnection(tcp_socket &TCPSocket, client_socket &&TCPSocket) RmtError {
 	status := SocketStatus{}
 	s := SOCKET{}
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3176, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3176, c'tcp_socket != NULL') } else {return error('error message')})
 	status = tcpsocket_pollstatus(tcp_socket)
 	if status.error_state != RmtError.rmt_error_none || !status.can_read {
 	return status.error_state
@@ -2156,7 +2165,7 @@ fn tcpsocket_acceptconnection(tcp_socket &TCPSocket, client_socket &&TCPSocket) 
 		flag := 1
 		setsockopt(s, 65535, 4130, &flag, sizeof(flag))
 	}
-	(if __builtin_expect(!(client_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3201, c'client_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(client_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3201, c'client_socket != NULL') } else {return error('error message')})
 	{
 		*client_socket = &TCPSocket(rmtmalloc(sizeof(TCPSocket)))
 		if *client_socket == (voidptr(0)) {
@@ -2190,7 +2199,7 @@ fn tcpsocket_send(tcp_socket &TCPSocket, data voidptr, length RmtU32, timeout_ms
 	end_data := (voidptr(0))
 	start_ms := 0
 	cur_ms := 0
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3230, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3230, c'tcp_socket != NULL') } else {return error('error message')})
 	start_ms = mstimer_get()
 	status.can_write = (RmtBool(0))
 	for !status.can_write {
@@ -2238,7 +2247,7 @@ fn tcpsocket_receive(tcp_socket &TCPSocket, data voidptr, length RmtU32, timeout
 	end_data := (voidptr(0))
 	start_ms := 0
 	cur_ms := 0
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3312, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3312, c'tcp_socket != NULL') } else {return error('error message')})
 	status = tcpsocket_pollstatus(tcp_socket)
 	if status.error_state != RmtError.rmt_error_none {
 	return status.error_state
@@ -2405,7 +2414,7 @@ fn calc(src voidptr, bytelength int, hash &u8)  {
 [c:'SHA1_Calculate']
 fn sha1_calculate(src voidptr, length u32) SHA1 {
 	hash := SHA1{}
-	(if __builtin_expect(!(int(length) >= 0), 0){ __assert_rtn(, c'Remotery.c', 3558, c'(int)length >= 0') } else {void(0)})
+	(if __builtin_expect(!(int(length) >= 0), 0){ __assert_rtn(, c'Remotery.c', 3558, c'(int)length >= 0') } else {return error('error message')})
 	calc(src, length, hash.data)
 	return hash
 }
@@ -2574,7 +2583,7 @@ fn websockethandshake(tcp_socket &TCPSocket, limit_host RmtPStr) RmtError {
 	key := &i8(0)
 	key_end := &i8(0)
 	hash := SHA1{}
-	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3813, c'tcp_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(tcp_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3813, c'tcp_socket != NULL') } else {return error('error message')})
 	start_ms = mstimer_get()
 	for buffer_ptr - buffer < buffer_len {
 		error := tcpsocket_receive(tcp_socket, buffer_ptr, 1, 20)
@@ -2589,7 +2598,7 @@ fn websockethandshake(tcp_socket &TCPSocket, limit_host RmtPStr) RmtError {
 			continue
 			
 		}
-		(if __builtin_expect(!(error == RmtError.rmt_error_none), 0){ __assert_rtn(, c'Remotery.c', 3836, c'error == RMT_ERROR_NONE') } else {void(0)})
+		(if __builtin_expect(!(error == RmtError.rmt_error_none), 0){ __assert_rtn(, c'Remotery.c', 3836, c'error == RMT_ERROR_NONE') } else {return error('error message')})
 		if buffer_ptr - buffer >= 4 {
 			if *(buffer_ptr - 3) == `
 ` && *(buffer_ptr - 2) == `
@@ -2656,7 +2665,7 @@ fn websockethandshake(tcp_socket &TCPSocket, limit_host RmtPStr) RmtError {
 
 [c:'WebSocket_Constructor']
 fn websocket_constructor(web_socket &WebSocket, tcp_socket &TCPSocket) RmtError {
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3904, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3904, c'web_socket != NULL') } else {return error('error message')})
 	web_socket.tcp_socket = tcp_socket
 	web_socket.mode = WebSocketMode.websocket_none
 	web_socket.frame_bytes_remaining = 0
@@ -2692,14 +2701,14 @@ fn websocket_destructor(web_socket &WebSocket)  {
 
 [c:'WebSocket_RunServer']
 fn websocket_runserver(web_socket &WebSocket, port RmtU16, reuse_open_port RmtBool, limit_connections_to_localhost RmtBool, mode WebSocketMode) RmtError {
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3930, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3930, c'web_socket != NULL') } else {return error('error message')})
 	web_socket.mode = mode
 	return tcpsocket_runserver(web_socket.tcp_socket, port, reuse_open_port, limit_connections_to_localhost)
 }
 
 [c:'WebSocket_Close']
 fn websocket_close(web_socket &WebSocket)  {
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3937, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3937, c'web_socket != NULL') } else {return error('error message')})
 	if web_socket.tcp_socket != (voidptr(0)) {
 		tcpsocket_destructor(web_socket.tcp_socket)
 		rmtfree(web_socket.tcp_socket)
@@ -2710,14 +2719,14 @@ fn websocket_close(web_socket &WebSocket)  {
 
 [c:'WebSocket_PollStatus']
 fn websocket_pollstatus(web_socket &WebSocket) SocketStatus {
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3943, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3943, c'web_socket != NULL') } else {return error('error message')})
 	return tcpsocket_pollstatus(web_socket.tcp_socket)
 }
 
 [c:'WebSocket_AcceptConnection']
 fn websocket_acceptconnection(web_socket &WebSocket, client_socket &&WebSocket) RmtError {
 	tcp_socket := (voidptr(0))
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3952, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3952, c'web_socket != NULL') } else {return error('error message')})
 	{
 		error := tcpsocket_acceptconnection(web_socket.tcp_socket, &tcp_socket)
 		if error != RmtError.rmt_error_none {
@@ -2735,7 +2744,7 @@ fn websocket_acceptconnection(web_socket &WebSocket, client_socket &&WebSocket) 
 		}
 	}
 	0 /* null */
-	(if __builtin_expect(!(client_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3962, c'client_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(client_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3962, c'client_socket != NULL') } else {return error('error message')})
 	{
 		*client_socket = &WebSocket(rmtmalloc(sizeof(WebSocket)))
 		if *client_socket == (voidptr(0)) {
@@ -2770,7 +2779,7 @@ fn writesize(size RmtU32, dest &RmtU8, dest_size RmtU32, dest_offset RmtU32)  {
 [c:'WebSocket_PrepareBuffer']
 fn websocket_preparebuffer(buffer &Buffer)  {
 	empty_frame_header := [10]i8{}
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3988, c'buffer != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 3988, c'buffer != NULL') } else {return error('error message')})
 	buffer.bytes_used = 0
 	buffer_write(buffer, empty_frame_header, sizeof(empty_frame_header))
 }
@@ -2812,8 +2821,8 @@ fn websocket_send(web_socket &WebSocket, data voidptr, length RmtU32, timeout_ms
 	frame_header_size := RmtU32{}
 	delta := RmtU32{}
 	
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4036, c'web_socket != NULL') } else {void(0)})
-	(if __builtin_expect(!(data != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4037, c'data != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4036, c'web_socket != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(data != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4037, c'data != NULL') } else {return error('error message')})
 	status = websocket_pollstatus(web_socket)
 	if status.error_state != RmtError.rmt_error_none {
 	return status.error_state
@@ -2837,7 +2846,7 @@ fn receiveframeheader(web_socket &WebSocket) RmtError {
 	i := 0
 	
 	mask_present := RmtBool{}
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4065, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4065, c'web_socket != NULL') } else {return error('error message')})
 	{
 		error := tcpsocket_receive(web_socket.tcp_socket, msg_header, 2, 20)
 		if error != RmtError.rmt_error_none {
@@ -2903,7 +2912,7 @@ fn websocket_receive(web_socket &WebSocket, data voidptr, msg_len &RmtU32, lengt
 	start_ms := RmtU32{}
 	now_ms := RmtU32{}
 	bytes_to_read := RmtU32{}
-	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4125, c'web_socket != NULL') } else {void(0)})
+	(if __builtin_expect(!(web_socket != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4125, c'web_socket != NULL') } else {return error('error message')})
 	status = websocket_pollstatus(web_socket)
 	if status.error_state != RmtError.rmt_error_none {
 		return status.error_state
@@ -2970,7 +2979,7 @@ struct RmtMessageQueue {
 }
 [c:'rmtMessageQueue_Constructor']
 fn rmtmessagequeue_constructor(queue &RmtMessageQueue, size RmtU32) RmtError {
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4245, c'queue != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4245, c'queue != NULL') } else {return error('error message')})
 	queue.size = 0
 	queue.data = (voidptr(0))
 	queue.read_pos = 0
@@ -2999,7 +3008,7 @@ fn rmtmessagequeue_constructor(queue &RmtMessageQueue, size RmtU32) RmtError {
 
 [c:'rmtMessageQueue_Destructor']
 fn rmtmessagequeue_destructor(queue &RmtMessageQueue)  {
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4267, c'queue != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4267, c'queue != NULL') } else {return error('error message')})
 	if queue.data != (voidptr(0)) {
 		virtualmirrorbuffer_destructor(queue.data)
 		rmtfree(queue.data)
@@ -3019,7 +3028,7 @@ fn rmtmessagequeue_sizeforpayload(payload_size RmtU32) RmtU32 {
 fn rmtmessagequeue_allocmessage(queue &RmtMessageQueue, payload_size RmtU32, thread_profiler &ThreadProfiler) &Message {
 	msg := &Message(0)
 	write_size := rmtmessagequeue_sizeforpayload(payload_size)
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4290, c'queue != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4290, c'queue != NULL') } else {return error('error message')})
 	for  ;  ;  {
 		s := queue.size
 		w := loadacquire(&queue.write_pos)
@@ -3041,10 +3050,10 @@ fn rmtmessagequeue_allocmessage(queue &RmtMessageQueue, payload_size RmtU32, thr
 [c:'rmtMessageQueue_CommitMessage']
 fn rmtmessagequeue_commitmessage(message &Message, id MessageID)  {
 	r := MessageID{}
-	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4322, c'message != NULL') } else {void(0)})
+	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4322, c'message != NULL') } else {return error('error message')})
 	r = MessageID(loadacquire(&RmtAtomicU32(&message.id)))
-	void((if 1{ void(0) } else {(void(r))}))
-	(if __builtin_expect(!(r == MessageID.msgid_notready), 0){ __assert_rtn(, c'Remotery.c', 4327, c'r == MsgID_NotReady') } else {void(0)})
+	void((if 1{ return error('error message') } else {(void(r))}))
+	(if __builtin_expect(!(r == MessageID.msgid_notready), 0){ __assert_rtn(, c'Remotery.c', 4327, c'r == MsgID_NotReady') } else {return error('error message')})
 	storerelease(&RmtAtomicU32(&message.id), id)
 }
 
@@ -3055,7 +3064,7 @@ fn rmtmessagequeue_peeknextmessage(queue &RmtMessageQueue) &Message {
 	w := RmtU32{}
 	
 	id := MessageID{}
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4337, c'queue != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4337, c'queue != NULL') } else {return error('error message')})
 	w = loadacquire(&queue.write_pos)
 	r = queue.read_pos
 	if w - r == 0 {
@@ -3075,8 +3084,8 @@ fn rmtmessagequeue_consumenextmessage(queue &RmtMessageQueue, message &Message) 
 	message_size := RmtU32{}
 	read_pos := RmtU32{}
 	
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4361, c'queue != NULL') } else {void(0)})
-	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4362, c'message != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4361, c'queue != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4362, c'message != NULL') } else {return error('error message')})
 	message_size = rmtmessagequeue_sizeforpayload(message.payload_size)
 	C.memset(message, MessageID.msgid_notready, message_size)
 	read_pos = queue.read_pos + message_size
@@ -3126,7 +3135,7 @@ fn server_createlistensocket(server &Server, port RmtU16, reuse_open_port RmtBoo
 
 [c:'Server_Constructor']
 fn server_constructor(server &Server, port RmtU16, reuse_open_port RmtBool, limit_connections_to_localhost RmtBool) RmtError {
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4423, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4423, c'server != NULL') } else {return error('error message')})
 	server.listen_socket = (voidptr(0))
 	server.client_socket = (voidptr(0))
 	server.last_ping_time = 0
@@ -3158,7 +3167,7 @@ fn server_constructor(server &Server, port RmtU16, reuse_open_port RmtBool, limi
 
 [c:'Server_Destructor']
 fn server_destructor(server &Server)  {
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4443, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4443, c'server != NULL') } else {return error('error message')})
 	if server.client_socket != (voidptr(0)) {
 		websocket_destructor(server.client_socket)
 		rmtfree(server.client_socket)
@@ -3181,14 +3190,14 @@ fn server_destructor(server &Server)  {
 
 [c:'Server_IsClientConnected']
 fn server_isclientconnected(server &Server) RmtBool {
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4451, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4451, c'server != NULL') } else {return error('error message')})
 	return if server.client_socket != (voidptr(0)){ (RmtBool(1)) } else {(RmtBool(0))}
 }
 
 [c:'Server_DisconnectClient']
 fn server_disconnectclient(server &Server)  {
 	client_socket := &WebSocket(0)
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4459, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4459, c'server != NULL') } else {return error('error message')})
 	client_socket = server.client_socket
 	server.client_socket = (voidptr(0))
 	compilerwritefence()
@@ -3202,7 +3211,7 @@ fn server_disconnectclient(server &Server)  {
 
 [c:'Server_Send']
 fn server_send(server &Server, data voidptr, length RmtU32, timeout RmtU32) RmtError {
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4470, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4470, c'server != NULL') } else {return error('error message')})
 	if server_isclientconnected(server) {
 		error := websocket_send(server.client_socket, data, length, timeout)
 		if error == RmtError.rmt_error_socket_send_fail {
@@ -3278,7 +3287,7 @@ fn bin_messagefooter(buffer &Buffer, write_start_offset RmtU32) RmtError {
 [c:'Server_Update']
 fn server_update(server &Server)  {
 	cur_time := RmtU32{}
-	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4534, c'server != NULL') } else {void(0)})
+	(if __builtin_expect(!(server != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4534, c'server != NULL') } else {return error('error message')})
 	if server.listen_socket == (voidptr(0)) {
 	server_createlistensocket(server, server.port, server.reuse_open_port, server.limit_connections_to_localhost)
 	}
@@ -3359,7 +3368,7 @@ struct Sample {
 }
 [c:'Sample_Constructor']
 fn sample_constructor(sample &Sample) RmtError {
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4672, c'sample != NULL') } else {void(0)})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4672, c'sample != NULL') } else {return error('error message')})
 	objectlink_constructor(&ObjectLink(sample))
 	sample.type_ = RmtSampleType.rmt_sampletype_cpu
 	sample.name_hash = 0
@@ -3385,7 +3394,7 @@ fn sample_constructor(sample &Sample) RmtError {
 
 [c:'Sample_Destructor']
 fn sample_destructor(sample &Sample)  {
-	void((if 1{ void(0) } else {(void(sample))}))
+	void((if 1{ return error('error message') } else {(void(sample))}))
 }
 
 [c:'Sample_Prepare']
@@ -3447,7 +3456,7 @@ fn bin_samplearray(buffer &Buffer, parent_sample &Sample, depth RmtU8) RmtError
 
 [c:'bin_Sample']
 fn bin_sample(buffer &Buffer, sample &Sample, depth RmtU8) RmtError {
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4773, c'sample != NULL') } else {void(0)})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4773, c'sample != NULL') } else {return error('error message')})
 	{
 		error := buffer_writeu32(buffer, sample.name_hash)
 		if error != RmtError.rmt_error_none {
@@ -3558,7 +3567,7 @@ struct SampleTree {
 }
 [c:'SampleTree_Constructor']
 fn sampletree_constructor(tree &SampleTree, sample_size RmtU32, constructor ObjConstructor, destructor ObjDestructor) RmtError {
-	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4840, c'tree != NULL') } else {void(0)})
+	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4840, c'tree != NULL') } else {return error('error message')})
 	tree.allocator = (voidptr(0))
 	tree.root = (voidptr(0))
 	tree.currentParent = (voidptr(0))
@@ -3596,7 +3605,7 @@ fn sampletree_constructor(tree &SampleTree, sample_size RmtU32, constructor ObjC
 
 [c:'SampleTree_Destructor']
 fn sampletree_destructor(tree &SampleTree)  {
-	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4862, c'tree != NULL') } else {void(0)})
+	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4862, c'tree != NULL') } else {return error('error message')})
 	if tree.root != (voidptr(0)) {
 		objectallocator_free(tree.allocator, tree.root)
 		tree.root = (voidptr(0))
@@ -3620,12 +3629,12 @@ fn hashcombine(hash_a RmtU32, hash_b RmtU32) RmtU32 {
 fn sampletree_push(tree &SampleTree, name_hash RmtU32, flags RmtU32, sample &&Sample) RmtError {
 	parent := &Sample(0)
 	unique_id := RmtU32{}
-	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4890, c'tree != NULL') } else {void(0)})
-	(if __builtin_expect(!(tree.currentParent != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4891, c'tree->currentParent != NULL') } else {void(0)})
+	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4890, c'tree != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(tree.currentParent != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4891, c'tree->currentParent != NULL') } else {return error('error message')})
 	parent = tree.currentParent
 	if flags != 0 {
 		if (flags & RmtSampleFlags.rmtsf_root) != 0 {
-			(if __builtin_expect(!(parent.parent == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4900, c'parent->parent == NULL') } else {void(0)})
+			(if __builtin_expect(!(parent.parent == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4900, c'parent->parent == NULL') } else {return error('error message')})
 		}
 		if (flags & RmtSampleFlags.rmtsf_aggregate) != 0 {
 			sibling := &Sample(0)
@@ -3654,8 +3663,8 @@ fn sampletree_push(tree &SampleTree, name_hash RmtU32, flags RmtU32, sample &&Sa
 		0 /* null */
 		sample_prepare(*sample, name_hash, parent)
 		if (flags & RmtSampleFlags.rmtsf_sendonclose) != 0 {
-			(if __builtin_expect(!(tree.currentParent != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4936, c'tree->currentParent != NULL') } else {void(0)})
-			(if __builtin_expect(!(tree.sendSampleOnClose == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4937, c'tree->sendSampleOnClose == NULL') } else {void(0)})
+			(if __builtin_expect(!(tree.currentParent != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4936, c'tree->currentParent != NULL') } else {return error('error message')})
+			(if __builtin_expect(!(tree.sendSampleOnClose == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4937, c'tree->sendSampleOnClose == NULL') } else {return error('error message')})
 			tree.sendSampleOnClose = *sample
 		}
 	}
@@ -3679,7 +3688,7 @@ fn sampletree_push(tree &SampleTree, name_hash RmtU32, flags RmtU32, sample &&Sa
 		parent.last_child = *sample
 	}
 	else {
-		(if __builtin_expect(!(parent.last_child != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4964, c'parent->last_child != NULL') } else {void(0)})
+		(if __builtin_expect(!(parent.last_child != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4964, c'parent->last_child != NULL') } else {return error('error message')})
 		parent.last_child.next_sibling = *sample
 		parent.last_child = *sample
 	}
@@ -3689,9 +3698,9 @@ fn sampletree_push(tree &SampleTree, name_hash RmtU32, flags RmtU32, sample &&Sa
 
 [c:'SampleTree_Pop']
 fn sampletree_pop(tree &SampleTree, sample &Sample)  {
-	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4977, c'tree != NULL') } else {void(0)})
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4978, c'sample != NULL') } else {void(0)})
-	(if __builtin_expect(!(sample != tree.root), 0){ __assert_rtn(, c'Remotery.c', 4979, c'sample != tree->root') } else {void(0)})
+	(if __builtin_expect(!(tree != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4977, c'tree != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4978, c'sample != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(sample != tree.root), 0){ __assert_rtn(, c'Remotery.c', 4979, c'sample != tree->root') } else {return error('error message')})
 	tree.currentParent = sample.parent
 }
 
@@ -3699,8 +3708,8 @@ fn sampletree_pop(tree &SampleTree, sample &Sample)  {
 fn flattensamples(sample &Sample, nb_samples &RmtU32) &ObjectLink {
 	child := &Sample(0)
 	cur_link := &sample.Link
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4988, c'sample != NULL') } else {void(0)})
-	(if __builtin_expect(!(nb_samples != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4989, c'nb_samples != NULL') } else {void(0)})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4988, c'sample != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(nb_samples != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 4989, c'nb_samples != NULL') } else {return error('error message')})
 	*nb_samples += 1
 	sample.Link.next = &ObjectLink(sample.first_child)
 	for child = sample.first_child ; child != (voidptr(0)) ; child = child.next_sibling {
@@ -3744,7 +3753,7 @@ fn sampletree_copysample(out_dst_sample &&Sample, dst_parent_sample &Sample, all
 			dst_parent_sample.last_child = dst_sample
 		}
 		else {
-			(if __builtin_expect(!(dst_parent_sample.last_child != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5047, c'dst_parent_sample->last_child != NULL') } else {void(0)})
+			(if __builtin_expect(!(dst_parent_sample.last_child != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5047, c'dst_parent_sample->last_child != NULL') } else {return error('error message')})
 			dst_parent_sample.last_child.next_sibling = dst_sample
 			dst_parent_sample.last_child = dst_sample
 		}
@@ -3948,7 +3957,7 @@ fn threadprofiler_pop(thread_profiler &ThreadProfiler, queue &RmtMessageQueue, s
 		partial_tree := SampleTree{}
 		if makepartialtreecopy(tree, sample.us_start + sample.us_length, &partial_tree) == RmtError.rmt_error_none {
 			root_sample := partial_tree.root.first_child
-			(if __builtin_expect(!(root_sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5336, c'root_sample != NULL') } else {void(0)})
+			(if __builtin_expect(!(root_sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5336, c'root_sample != NULL') } else {return error('error message')})
 			queuesampletree(queue, root_sample, partial_tree.allocator, thread_profiler.threadName, msg_user_data, thread_profiler, (RmtBool(1)))
 		}
 		if partial_tree.root != (voidptr(0)) {
@@ -3966,7 +3975,7 @@ fn threadprofiler_getnamehash(thread_profiler &ThreadProfiler, queue &RmtMessage
 	if hash_cache != (voidptr(0)) {
 		name_hash = atomicloadu32(&RmtAtomicU32(hash_cache))
 		if name_hash == 0 {
-			(if __builtin_expect(!(name != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5364, c'name != NULL') } else {void(0)})
+			(if __builtin_expect(!(name != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5364, c'name != NULL') } else {return error('error message')})
 			name_len = strnlen_s_safe_c(name, 256)
 			name_hash = _rmt_hashstring32(name, name_len, 0)
 			if queueaddtostringtable(queue, name_hash, name, name_len, thread_profiler) == (RmtBool(1)) {
@@ -4112,14 +4121,14 @@ fn threadprofilers_threadincallback(thread_profilers &ThreadProfilers, context &
 [c:'GatherThreads']
 fn gatherthreads(thread_profilers &ThreadProfilers)  {
 	handle := RmtThreadHandle{}
-	(if __builtin_expect(!(thread_profilers != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5587, c'thread_profilers != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread_profilers != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5587, c'thread_profilers != NULL') } else {return error('error message')})
 }
 
 [c:'GatherThreadsLoop']
 fn gatherthreadsloop(thread &RmtThread) RmtError {
 	thread_profilers := &ThreadProfilers(thread.param)
 	sleep_time := 100
-	(if __builtin_expect(!(thread_profilers != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5630, c'thread_profilers != NULL') } else {void(0)})
+	(if __builtin_expect(!(thread_profilers != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 5630, c'thread_profilers != NULL') } else {return error('error message')})
 	_rmt_setcurrentthreadname(c'RemoteryGatherThreads')
 	for thread.request_exit == (RmtBool(0)) {
 		gatherthreads(thread_profilers)
@@ -4272,7 +4281,7 @@ fn samplethreadsloop(rmt_thread &RmtThread) RmtError {
 		sample_count = atomicadds32(&thread_profiler.nbSamplesWithoutCallback, 1)
 		processor_index = thread_profiler.processorIndex
 		if processor_index != RmtU32(-1) {
-			(if __builtin_expect(!(processor_index < nb_processors), 0){ __assert_rtn(, c'Remotery.c', 5989, c'processor_index < nb_processors') } else {void(0)})
+			(if __builtin_expect(!(processor_index < nb_processors), 0){ __assert_rtn(, c'Remotery.c', 5989, c'processor_index < nb_processors') } else {return error('error message')})
 			processors [processor_index] .threadProfiler = thread_profiler
 			processors [processor_index] .sampleCount = sample_count
 			processors [processor_index] .sampleTime = sample_time_us
@@ -4286,7 +4295,7 @@ fn samplethreadsloop(rmt_thread &RmtThread) RmtError {
 			}
 		}
 		if RmtError.rmt_error_none != checkforstallingsamples(&stalling_sample_tree, thread_profiler, sample_time_us) {
-			(if __builtin_expect(!(stalling_sample_tree.allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6037, c'stalling_sample_tree.allocator != NULL') } else {void(0)})
+			(if __builtin_expect(!(stalling_sample_tree.allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6037, c'stalling_sample_tree.allocator != NULL') } else {return error('error message')})
 			if stalling_sample_tree.root != (voidptr(0)) {
 				freesamples(stalling_sample_tree.root, stalling_sample_tree.allocator)
 			}
@@ -4294,12 +4303,12 @@ fn samplethreadsloop(rmt_thread &RmtThread) RmtError {
 		rmtresumethread(thread_handle)
 		if stalling_sample_tree.root != (voidptr(0)) {
 			sample := stalling_sample_tree.root.first_child
-			(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6052, c'sample != NULL') } else {void(0)})
+			(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6052, c'sample != NULL') } else {return error('error message')})
 			queuesampletree(thread_profilers.mqToRmtThread, sample, stalling_sample_tree.allocator, thread_profiler.threadName, 0, thread_profiler, (RmtBool(1)))
 			stalling_sample_tree.root.first_child = (voidptr(0))
 			stalling_sample_tree.root.last_child = (voidptr(0))
 			stalling_sample_tree.root.nb_children = 0
-			(if __builtin_expect(!(stalling_sample_tree.allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6061, c'stalling_sample_tree.allocator != NULL') } else {void(0)})
+			(if __builtin_expect(!(stalling_sample_tree.allocator != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6061, c'stalling_sample_tree.allocator != NULL') } else {return error('error message')})
 			freesamples(stalling_sample_tree.root, stalling_sample_tree.allocator)
 		}
 		// while()
@@ -4311,7 +4320,7 @@ fn samplethreadsloop(rmt_thread &RmtThread) RmtError {
 			if thread_profiler != (voidptr(0)) {
 				last_processor_index := thread_profiler.lastProcessorIndex
 				if last_processor_index != RmtU32(-1) && last_processor_index != processor_index {
-					(if __builtin_expect(!(last_processor_index < nb_processors), 0){ __assert_rtn(, c'Remotery.c', 6081, c'last_processor_index < nb_processors') } else {void(0)})
+					(if __builtin_expect(!(last_processor_index < nb_processors), 0){ __assert_rtn(, c'Remotery.c', 6081, c'last_processor_index < nb_processors') } else {return error('error message')})
 					if processors [last_processor_index] .threadProfiler == thread_profiler {
 						processors [last_processor_index] .threadProfiler = (voidptr(0))
 					}
@@ -4353,7 +4362,7 @@ struct Msg_PropertySnapshot {
 }
 [c:'PropertySnapshot_Constructor']
 fn propertysnapshot_constructor(snapshot &PropertySnapshot) RmtError {
-	(if __builtin_expect(!(snapshot != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6164, c'snapshot != NULL') } else {void(0)})
+	(if __builtin_expect(!(snapshot != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6164, c'snapshot != NULL') } else {return error('error message')})
 	objectlink_constructor(&ObjectLink(snapshot))
 	snapshot.type_ = RmtPropertyType.rmt_propertytype_rmtbool
 	snapshot.value.Bool = (RmtBool(0))
@@ -4367,7 +4376,7 @@ fn propertysnapshot_constructor(snapshot &PropertySnapshot) RmtError {
 
 [c:'PropertySnapshot_Destructor']
 fn propertysnapshot_destructor(snapshot &PropertySnapshot)  {
-	void((if 1{ void(0) } else {(void(snapshot))}))
+	void((if 1{ return error('error message') } else {(void(snapshot))}))
 }
 
 struct Remotery { 
@@ -4412,8 +4421,8 @@ fn saturate(v f64) f64 {
 [c:'PostProcessSamples']
 fn postprocesssamples(sample &Sample, nb_samples &RmtU32)  {
 	child := &Sample(0)
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6276, c'sample != NULL') } else {void(0)})
-	(if __builtin_expect(!(nb_samples != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6277, c'nb_samples != NULL') } else {void(0)})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6276, c'sample != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(nb_samples != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6277, c'nb_samples != NULL') } else {return error('error message')})
 	(*nb_samples) ++
 	{
 		h := f64(sample.name_hash) / f64(4294967295)
@@ -4440,8 +4449,8 @@ fn postprocesssamples(sample &Sample, nb_samples &RmtU32)  {
 fn remotery_sendlogtextmessage(rmt &Remotery, message &Message) RmtError {
 	bin_buf := &Buffer(0)
 	write_start_offset := RmtU32{}
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6323, c'rmt != NULL') } else {void(0)})
-	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6324, c'message != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6323, c'rmt != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6324, c'message != NULL') } else {return error('error message')})
 	bin_buf = rmt.server.bin_buf
 	websocket_preparebuffer(bin_buf)
 	{
@@ -4547,10 +4556,10 @@ fn bin_sampletree(buffer &Buffer, msg &Msg_SampleTree) RmtError {
 	thread_name := [256]i8{}
 	nb_samples := 0
 	write_start_offset := 0
-	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6383, c'buffer != NULL') } else {void(0)})
-	(if __builtin_expect(!(msg != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6384, c'msg != NULL') } else {void(0)})
+	(if __builtin_expect(!(buffer != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6383, c'buffer != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(msg != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6384, c'msg != NULL') } else {return error('error message')})
 	root_sample = msg.rootSample
-	(if __builtin_expect(!(root_sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6388, c'root_sample != NULL') } else {void(0)})
+	(if __builtin_expect(!(root_sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6388, c'root_sample != NULL') } else {return error('error message')})
 	thread_name [0]  = 0
 	strncat_s_safe_c(thread_name, sizeof(thread_name), msg.threadName, strnlen_s_safe_c(msg.threadName, 255))
 	if root_sample.type_ == RmtSampleType.rmt_sampletype_cuda {
@@ -4645,11 +4654,11 @@ fn remotery_sendsampletreemessage(rmt &Remotery, message &Message) RmtError {
 	sample_tree := &Msg_SampleTree(0)
 	sample := &Sample(0)
 	bin_buf := &Buffer(0)
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6467, c'rmt != NULL') } else {void(0)})
-	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6468, c'message != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6467, c'rmt != NULL') } else {return error('error message')})
+	(if __builtin_expect(!(message != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6468, c'message != NULL') } else {return error('error message')})
 	sample_tree = &Msg_SampleTree(message.payload)
 	sample = sample_tree.rootSample
-	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6473, c'sample != NULL') } else {void(0)})
+	(if __builtin_expect(!(sample != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6473, c'sample != NULL') } else {return error('error message')})
 	bin_buf = rmt.server.bin_buf
 	websocket_preparebuffer(bin_buf)
 	{
@@ -4980,7 +4989,7 @@ fn remotery_sendpropertysnapshot(rmt &Remotery, message &Message) RmtError {
 fn remotery_consumemessagequeue(rmt &Remotery) RmtError {
 	nb_messages_sent := 0
 	maxnbmessagesperupdate := g_Settings.maxNbMessagesPerUpdate
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6681, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6681, c'rmt != NULL') } else {return error('error message')})
 	for nb_messages_sent < maxnbmessagesperupdate {
 		error := RmtError.rmt_error_none
 		message := rmtmessagequeue_peeknextmessage(rmt.mq_to_rmt_thread)
@@ -4991,7 +5000,7 @@ fn remotery_consumemessagequeue(rmt &Remotery) RmtError {
 		match message.id {
 		 .msgid_notready// case comp body kind=ParenExpr is_enum=true 
 		{
-		(if __builtin_expect(!((RmtBool(0))), 0){ __assert_rtn(, c'Remotery.c', 6696, c'RMT_FALSE') } else {void(0)})
+		(if __builtin_expect(!((RmtBool(0))), 0){ __assert_rtn(, c'Remotery.c', 6696, c'RMT_FALSE') } else {return error('error message')})
 		
 		}
 		 .msgid_addtostringtable// case comp body kind=BinaryOperator is_enum=true 
@@ -5040,7 +5049,7 @@ fn remotery_consumemessagequeue(rmt &Remotery) RmtError {
 
 [c:'Remotery_FlushMessageQueue']
 fn remotery_flushmessagequeue(rmt &Remotery)  {
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6738, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6738, c'rmt != NULL') } else {return error('error message')})
 	for  ;  ;  {
 		message := rmtmessagequeue_peeknextmessage(rmt.mq_to_rmt_thread)
 		if message == (voidptr(0)) {
@@ -5077,7 +5086,7 @@ fn remotery_mapmessagequeue(rmt &Remotery)  {
 	write_pos := RmtU32{}
 	
 	queue := &RmtMessageQueue(0)
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6781, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6781, c'rmt != NULL') } else {return error('error message')})
 	for loadacquirepointer(&&int(&rmt.map_message_queue_data)) == (voidptr(0)) {
 	mssleep(1)
 	}
@@ -5097,7 +5106,7 @@ fn remotery_mapmessagequeue(rmt &Remotery)  {
 [c:'Remotery_ThreadMain']
 fn remotery_threadmain(thread &RmtThread) RmtError {
 	rmt := &Remotery(thread.param)
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6809, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6809, c'rmt != NULL') } else {return error('error message')})
 	_rmt_setcurrentthreadname(c'Remotery')
 	for thread.request_exit == (RmtBool(0)) {
 		{
@@ -5170,7 +5179,7 @@ fn remotery_receivemessage(context voidptr, message_data &i8, message_length Rmt
 
 [c:'Remotery_Constructor']
 fn remotery_constructor(rmt &Remotery) RmtError {
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6911, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 6911, c'rmt != NULL') } else {return error('error message')})
 	rmt.server = (voidptr(0))
 	rmt.mq_to_rmt_thread = (voidptr(0))
 	rmt.thread = (voidptr(0))
@@ -5307,7 +5316,7 @@ fn remotery_constructor(rmt &Remotery) RmtError {
 		}
 	}
 	0 /* null */
-	(if __builtin_expect(!(g_Remotery == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7031, c'g_Remotery == NULL') } else {void(0)})
+	(if __builtin_expect(!(g_Remotery == (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7031, c'g_Remotery == NULL') } else {return error('error message')})
 	g_Remotery = rmt
 	g_RemoteryCreated = (RmtBool(1))
 	g_Remotery.countThreads = 0
@@ -5334,7 +5343,7 @@ fn remotery_constructor(rmt &Remotery) RmtError {
 
 [c:'Remotery_Destructor']
 fn remotery_destructor(rmt &Remotery)  {
-	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7047, c'rmt != NULL') } else {void(0)})
+	(if __builtin_expect(!(rmt != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7047, c'rmt != NULL') } else {return error('error message')})
 	if rmt.thread != (voidptr(0)) {
 		rmtthread_destructor(rmt.thread)
 		rmtfree(rmt.thread)
@@ -5385,19 +5394,19 @@ fn remotery_destructor(rmt &Remotery)  {
 
 [c:'CRTMalloc']
 fn crtmalloc(mm_context voidptr, size RmtU32) voidptr {
-	void((if 1{ void(0) } else {(void(mm_context))}))
+	void((if 1{ return error('error message') } else {(void(mm_context))}))
 	return C.malloc(usize(size))
 }
 
 [c:'CRTFree']
 fn crtfree(mm_context voidptr, ptr voidptr)  {
-	void((if 1{ void(0) } else {(void(mm_context))}))
+	void((if 1{ return error('error message') } else {(void(mm_context))}))
 	C.free(ptr)
 }
 
 [c:'CRTRealloc']
 fn crtrealloc(mm_context voidptr, ptr voidptr, size RmtU32) voidptr {
-	void((if 1{ void(0) } else {(void(mm_context))}))
+	void((if 1{ return error('error message') } else {(void(mm_context))}))
 	return realloc(ptr, size)
 }
 
@@ -5428,9 +5437,9 @@ fn _rmt_settings() &RmtSettings {
 
 [c:'_rmt_CreateGlobalInstance']
 fn _rmt_createglobalinstance(remotery &&Remotery) RmtError {
-	(if __builtin_expect(!(sizeof(MessageID) == sizeof(RmtU32)), 0){ __assert_rtn(, c'Remotery.c', 7147, c'sizeof(MessageID) == sizeof(rmtU32)') } else {void(0)})
+	(if __builtin_expect(!(sizeof(MessageID) == sizeof(RmtU32)), 0){ __assert_rtn(, c'Remotery.c', 7147, c'sizeof(MessageID) == sizeof(rmtU32)') } else {return error('error message')})
 	_rmt_settings()
-	(if __builtin_expect(!(remotery != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7153, c'remotery != NULL') } else {void(0)})
+	(if __builtin_expect(!(remotery != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7153, c'remotery != NULL') } else {return error('error message')})
 	{
 		*remotery = &Remotery(rmtmalloc(sizeof(Remotery)))
 		if *remotery == (voidptr(0)) {
@@ -5453,8 +5462,8 @@ fn _rmt_createglobalinstance(remotery &&Remotery) RmtError {
 
 [c:'_rmt_DestroyGlobalInstance']
 fn _rmt_destroyglobalinstance(remotery &Remotery)  {
-	(if __builtin_expect(!(g_RemoteryCreated == (RmtBool(1))), 0){ __assert_rtn(, c'Remotery.c', 7161, c'g_RemoteryCreated == RMT_TRUE') } else {void(0)})
-	(if __builtin_expect(!(g_Remotery == remotery), 0){ __assert_rtn(, c'Remotery.c', 7162, c'g_Remotery == remotery') } else {void(0)})
+	(if __builtin_expect(!(g_RemoteryCreated == (RmtBool(1))), 0){ __assert_rtn(, c'Remotery.c', 7161, c'g_RemoteryCreated == RMT_TRUE') } else {return error('error message')})
+	(if __builtin_expect(!(g_Remotery == remotery), 0){ __assert_rtn(, c'Remotery.c', 7162, c'g_Remotery == remotery') } else {return error('error message')})
 	if remotery != (voidptr(0)) {
 		remotery_destructor(remotery)
 		rmtfree(remotery)
@@ -5492,7 +5501,7 @@ fn makewidestring(string_ &i8) &wchar_t {
 
 [c:'SetDebuggerThreadName']
 fn setdebuggerthreadname(name &i8)  {
-	void((if 1{ void(0) } else {(void(name))}))
+	void((if 1{ return error('error message') } else {(void(name))}))
 }
 
 [c:'_rmt_SetCurrentThreadName']
@@ -5514,7 +5523,7 @@ fn _rmt_setcurrentthreadname(thread_name RmtPStr)  {
 fn queueline(queue &RmtMessageQueue, text &u8, size RmtU32, thread_profiler &ThreadProfiler) RmtBool {
 	message := &Message(0)
 	text_size := RmtU32{}
-	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7317, c'queue != NULL') } else {void(0)})
+	(if __builtin_expect(!(queue != (voidptr(0))), 0){ __assert_rtn(, c'Remotery.c', 7317, c'queue != NULL') } else {return error('error message')})
 	text_size = size - 4
 	u32tobytearray(text, text_size)
 	message = rmtmessagequeue_allocmessage(queue, size, thread_profiler)
@@ -5564,7 +5573,7 @@ fn _rmt_logtext(text RmtPStr)  {
 		line_buffer [offset ++]  = c
 	}
 	if offset > start_offset {
-		(if __builtin_expect(!(offset < int(sizeof(line_buffer))), 0){ __assert_rtn(, c'Remotery.c', 7386, c'offset < (int)sizeof(line_buffer)') } else {void(0)})
+		(if __builtin_expect(!(offset < int(sizeof(line_buffer))), 0){ __assert_rtn(, c'Remotery.c', 7386, c'offset < (int)sizeof(line_buffer)') } else {return error('error message')})
 		queueline(g_Remotery.mq_to_rmt_thread, line_buffer, offset, thread_profiler)
 	}
 }
@@ -5786,7 +5795,7 @@ fn _rmt_propertyaddvalue(property &RmtProperty, add_value RmtPropertyValue)  {
 		return 
 	}
 	registerproperty(property, (RmtBool(1)))
-	void((if 1{ void(0) } else {(void(add_value))}))
+	void((if 1{ return error('error message') } else {(void(add_value))}))
 }
 
 [c:'TakePropertySnapshot']
